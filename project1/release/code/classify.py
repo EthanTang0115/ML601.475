@@ -51,6 +51,8 @@ def main():
 
         # Create the model.
         # TODO: Add other algorithms as necessary.
+        if args.algorithm.lower() == 'sumoffeatures':
+            model = models.SumOfFeatures()
         if args.algorithm.lower() == 'useless':
             model = models.Useless()
         else:

@@ -92,8 +92,19 @@ class SumOfFeatures(Model):
 
     def predict(self, X):
         # TODO: Write code to make predictions.
-        
-        pass
+        # When the number of features in a data point is even
+        if X.shape[1] % 2 == 0:
+            left = X[:,0:X.shape[1]/2]
+            right = X[:,X.shape[1]/2:X.shape[1]]
+            left_sum = np.sum(left, axis=1);
+            right_sum = np.sum(right, axis=1);
+            return 1*np.greater_equal(left_sum, right_sum)
+        if X.shape[1] %2 != 0:
+            left = X[:,0:X.shape[1]/2-1]
+            right = X[:,X.shape[1]/2+1:X.shape[1]]
+            left_sum = np.sum(left, axis=1)
+            right_sum = np.sum(right, axis=1)
+            return 1*np.greater_equal(left_sum, right_sum)     
 
 
 class Perceptron(Model):
@@ -109,8 +120,7 @@ class Perceptron(Model):
 
     def predict(self, X):
         # TODO: Write code to make predictions.
-        if X.shape(0)
-        return y_hat
+        
 
 
 # TODO: Add other Models as necessary.
