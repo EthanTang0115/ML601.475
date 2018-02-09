@@ -1,4 +1,4 @@
-This is an repository for codes from machine learning
+This is a repository for codes from machine learning
 
 JHU 601.475 Machine Learning
 
