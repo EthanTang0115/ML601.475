@@ -1,7 +1,15 @@
 import os
+import argparse
+
+def get_args():
+    parser = argparse.ArgumentParser(description="This program tests you model on all data sets.")
+    parser.add_argument("--algorithm", type=str)
+    args = parser.parse_args()
+    return args
 
 
-ALGORITHM = 'useless'
+args = get_args()    
+ALGORITHM = args.algorithm.lower()
 DATA_DIR = 'datasets'
 OUTPUT_DIR = 'output'
 DATASETS = ['easy', 'hard', 'bio', 'finance', 'nlp', 'speech', 'vision']

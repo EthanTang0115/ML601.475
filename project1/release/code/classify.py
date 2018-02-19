@@ -18,6 +18,8 @@ def get_args():
     parser.add_argument("--algorithm", type=str,
                         help="The name of the algorithm to use. (Only used for training; inferred from the model file at test time.)")
     parser.add_argument("--predictions-file", type=str, help="The predictions file to create. (Only used for testing.)")
+    parser.add_argument("--online-learning-rate", type=float, help="The learning rate for perceptron", default=1.0)
+    parser.add_argument("--online-training-iterations", type=int, help="The number of traning iterations for online methods.", default=5)
 
     # TODO: Add optional command-line arguments as necessary.
 
@@ -53,13 +55,18 @@ def main():
         # TODO: Add other algorithms as necessary.
         if args.algorithm.lower() == 'sumoffeatures':
             model = models.SumOfFeatures()
-        if args.algorithm.lower() == 'useless':
-            model = models.Useless()
+        elif args.algorithm.lower() == 'perceptron':
+              model = models.Perceptron()
+        elif args.algorithm.lower() == 'useless':
+              model = models.Useless()
         else:
             raise Exception('The model given by --model is not yet supported.')
 
         # Train the model.
-        model.fit(X, y)
+        if args.algorithm.lower() == 'perceptron':
+            model.fit(X ,y, args.online_learning_rate, args.online_training_iterations)
+        else:
+            model.fit(X, y)
 
         # Save the model.
         try:
