@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import expit
 
 
 class Model(object):
@@ -129,10 +130,12 @@ class Perceptron(Model):
         self.w = np.zeros(self.num_input_features)
         lr = online_learning_rate
         num_iter = online_training_iterations
-        # loop through data to update parameters
+        # loop through data to update parameters, using gradient descent
         for i in range(num_iter):
             for j in range(self.num_examples):
                 example = X[j, :]
+                if j == 0:
+                    print (example)
                 y_pred = np.sign(example.multiply(self.w).sum(axis=1))
                 if y_pred == -1:
                     y_pred = 0
@@ -152,6 +155,7 @@ class Perceptron(Model):
             X = X[:, :self.num_input_features]
         # use trained parameters to make prediction
         dot_products = X.multiply(self.w).sum(axis=1)
+        print (X.shape[0], X.shape[1], self.w.shape[0])
         dot_products = np.asarray(dot_products).flatten()
         positive_label_mask = dot_products >= 0
         negative_label_mask = dot_products < 0
@@ -161,5 +165,47 @@ class Perceptron(Model):
         return y_hat
         pass
 
+class LogisticRegression(Model):
+    def __init__(self):
+        super().__init__()
+        pass
+    
+    def fit(self, X, y, online_learning_rate, gd_iterations, num_orig_features, index_array):
+        X = X.copy()
+        X_c = X.toarray()
+        self.num_orig_features = num_orig_features
+        self.num_examples = X_c.shape[0]
+        self.num_input_features = X_c.shape[1]
+        # implementation of logistics regression
+        self.w = np.zeros(self.num_input_features)
+        lr = online_learning_rate
+        num_iter = gd_iterations
+        # update parameters, using gradient ascent
+        for i in range(num_iter):
+            X_t = np.transpose(X_c)
+            grad_temp = X_t.dot(y-expit(X_c.dot(self.w)))
+            self.w = self.w + lr*grad_temp
+        # expand self.w into origianl size if feature selection is applied
+        if self.num_input_features != self.num_orig_features:
+            w_ex = np.zeros(self.num_orig_features)
+            for i in range(index_array.shape[0]):
+                w_ex[index_array[i]] = self.w[i]
+            self.w = w_ex
+        pass
 
+    def predict(self, X):
+        X = X.copy()
+        num_examples, num_input_features = X.shape
+        if num_input_features < self.num_orig_features:
+            X._shape = (num_examples, self.num_orig_features)
+        if num_input_features > self.num_orig_features:
+            X = X[:, :self.num_orig_features]
+        # use trained paramters to make prediction
+        X_c = X.toarray()
+        dot_products = X_c.dot(self.w)
+        probs = expit(dot_products)
+        y_hat = np.zeros([num_examples], dtype=np.int)
+        y_hat[probs >= 0.5] =1
+        return y_hat
+        pass
 # TODO: Add other Models as necessary.
